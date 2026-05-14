@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratório Misterioso IFTechInova</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+  --primary:#22c55e; --primary-dark:#16a34a; --soft:#dcfce7;
+  --text:#0f172a; --muted:#64748b; --card:#fff; --shadow:0 18px 45px rgba(15,23,42,.1);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:Inter, sans-serif; color:var(--text);
+  background:radial-gradient(circle at top left,rgba(34,197,94,.18),transparent 28%),
+             radial-gradient(circle at bottom right,rgba(59,130,246,.14),transparent 34%),
+             linear-gradient(135deg,#f0fdf4,#eff6ff);
+  min-height:100vh;
+}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.86);backdrop-filter:blur(12px);border-bottom:1px solid #e2e8f0}
+.topbar-inner{max-width:1120px;margin:auto;padding:14px 20px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.back-link{text-decoration:none;color:#166534;font-weight:800;display:flex;gap:8px;align-items:center}
+.score{background:white;border:1px solid #bbf7d0;border-radius:999px;padding:9px 14px;font-weight:800;box-shadow:0 8px 24px rgba(34,197,94,.12)}
+.score i{color:#f59e0b}
+main{max-width:1120px;margin:auto;padding:34px 20px 60px}
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:22px;margin-bottom:22px}
+.card,.panel{background:rgba(255,255,255,.9);border:1px solid rgba(148,163,184,.25);border-radius:28px;box-shadow:var(--shadow)}
+.card{padding:32px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;background:var(--soft);color:#15803d;font-weight:800;border-radius:999px;padding:7px 12px;margin-bottom:16px}
+h1{font-family:"Space Grotesk";font-size:clamp(2rem,5vw,4rem);line-height:1;margin:0 0 14px;letter-spacing:-.04em}
+.lead{font-size:1.08rem;color:#334155;line-height:1.65;margin:0}
+.side{padding:24px;display:flex;flex-direction:column;justify-content:space-between}
+.big-icon{width:78px;height:78px;border-radius:24px;background:linear-gradient(135deg,#22c55e,#86efac);display:grid;place-items:center;color:white;font-size:2rem;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.progress-info{display:flex;justify-content:space-between;color:var(--muted);font-weight:800;font-size:.9rem;margin-bottom:8px}
+.progress-bar{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#3b82f6);transition:.4s}
+.panel{padding:26px;margin-bottom:22px}
+.hidden{display:none!important}
+.section-title{font-family:"Space Grotesk";font-size:1.7rem;margin:0 0 8px}
+.section-subtitle{margin:0 0 20px;color:var(--muted);line-height:1.6}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.component{min-height:178px;border:1px solid #cbd5e1;border-radius:22px;background:white;padding:18px 12px;text-align:center;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.component:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(15,23,42,.1);border-color:#86efac}
+.component.seen{background:linear-gradient(180deg,#fff,#f0fdf4);border-color:#22c55e}
+.comp-icon{width:64px;height:64px;border-radius:22px;background:var(--soft);color:#15803d;margin:0 auto 12px;display:grid;place-items:center;font-size:1.9rem}
+.component h3{font-size:1rem;margin:0 0 7px}
+.component p{font-size:.86rem;color:var(--muted);margin:0;line-height:1.4}
+.check{position:absolute;top:12px;right:12px;width:26px;height:26px;border-radius:50%;background:#22c55e;color:white;display:grid;place-items:center;transform:scale(0);transition:.2s}
+.seen .check{transform:scale(1)}
+.detail{margin-top:20px;display:grid;grid-template-columns:190px 1fr;gap:20px;align-items:center;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:24px;padding:20px;animation:reveal .35s ease}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.detail img{width:190px;border-radius:22px;background:white;box-shadow:0 10px 28px rgba(34,197,94,.15)}
+.detail h3{font-size:1.55rem;margin:0 0 8px;font-family:"Space Grotesk"}
+.detail p{margin:0;color:#334155;line-height:1.65}
+.actions{margin-top:22px;display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+button{font-family:Inter;border:0;border-radius:999px;padding:13px 18px;font-weight:800;cursor:pointer;transition:.2s}
+.btn-primary{background:#22c55e;color:white;box-shadow:0 12px 26px rgba(34,197,94,.24)}
+.btn-primary:hover{background:#16a34a;transform:translateY(-2px)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-secondary{background:white;color:#166534;border:1px solid #86efac}
+.quiz-card{background:white;border:1px solid #cbd5e1;border-radius:24px;padding:24px}
+.qnum{color:#15803d;font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:.88rem;margin-bottom:8px}
+.qtext{font-family:"Space Grotesk";font-size:1.6rem;margin:0 0 20px}
+.options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.option{text-align:left;background:#f8fafc;color:#0f172a;border:2px solid transparent;border-radius:20px;padding:16px;display:flex;gap:12px;align-items:center}
+.option:hover{background:white;border-color:#86efac;transform:translateY(-2px)}
+.option.correct{background:#dcfce7;border-color:#22c55e;animation:pop .5s}
+.option.wrong{background:#fee2e2;border-color:#ef4444;animation:shake .35s}
+.option.disabled{pointer-events:none;opacity:.9}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.feedback{display:none;margin-top:16px;border-radius:18px;padding:14px 16px;font-weight:700;line-height:1.5}
+.feedback.show{display:block}
+.feedback.ok{background:#dcfce7;color:#14532d}
+.feedback.bad{background:#fee2e2;color:#7f1d1d}
+.final-grid{display:grid;grid-template-columns:1fr .9fr;gap:20px}
+.result{background:linear-gradient(135deg,#dcfce7,#dbeafe);border:1px solid #bbf7d0;border-radius:24px;padding:26px}
+.result-score{font-family:"Space Grotesk";font-size:3.2rem;letter-spacing:-.04em;margin:8px 0}
+.form{background:white;border:1px solid #cbd5e1;border-radius:24px;padding:24px}
+label{display:block;font-weight:800;margin-bottom:8px}
+input{width:100%;border:1px solid #cbd5e1;border-radius:16px;padding:13px 14px;font:inherit;margin-bottom:14px}
+input:focus{outline:0;border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.14)}
+.status{margin-top:12px;color:#64748b;font-weight:700;line-height:1.5}
+.note{font-size:.86rem;color:#64748b;line-height:1.5}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:99}
+.confetti span{position:absolute;top:-20px;width:10px;height:16px;border-radius:4px;animation:fall .9s ease-out forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:0}}
+@media(max-width:900px){.hero,.final-grid{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.options{grid-template-columns:1fr}}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.detail{grid-template-columns:1fr}.detail img{width:100%}.topbar-inner{flex-direction:column;align-items:flex-start}}
+</style>
+</head>
+
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="back-link" href="objetos.html"><i class="fa-solid fa-arrow-left"></i> Voltar aos objetos</a>
+    <div class="score"><i class="fa-solid fa-star"></i> Pontos: <span id="scoreTop">0</span></div>
+  </div>
+</div>
+
+<main>
+  <section class="hero">
+    <div class="card">
+      <div class="eyebrow"><i class="fa-solid fa-flask"></i> IFTechInova · Primeira missão</div>
+      <h1>Laboratório Misterioso</h1>
+      <p class="lead">Descubra os componentes básicos que serão usados nas aulas com Arduino. Clique nas caixas misteriosas, revele cada peça e complete os desafios.</p>
+    </div>
+    <aside class="card side">
+      <div class="big-icon"><i class="fa-solid fa-microchip"></i></div>
+      <div>
+        <p class="section-subtitle">Explore, aprenda, pontue e registre sua participação.</p>
+        <div class="progress-info"><span>Progresso</span><span id="progressText">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="panel" id="exploreScreen">
+    <h2 class="section-title">1. Descubra os componentes</h2>
+    <p class="section-subtitle">Clique nas caixas misteriosas para revelar imagens dos componentes, ganhar pontos e liberar os desafios.</p>
+    <div class="grid" id="componentsGrid"></div>
+
+    <div class="detail hidden" id="detailBox">
+      <img id="detailImage" alt="Imagem do componente revelado">
+      <div>
+        <h3 id="detailTitle"></h3>
+        <p id="detailText"></p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="startQuizBtn" disabled>Começar desafios <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <section class="panel hidden" id="quizScreen">
+    <h2 class="section-title">2. Desafios rápidos</h2>
+    <p class="section-subtitle">Escolha a melhor resposta. Ao acertar, você ganha pontos e recebe um efeito especial.</p>
+    <div class="quiz-card">
+      <div class="qnum" id="questionNumber"></div>
+      <h3 class="qtext" id="questionText"></h3>
+      <div class="options" id="optionsBox"></div>
+      <div class="feedback" id="feedbackBox"></div>
+    </div>
+    <div class="actions">
+      <button class="btn-secondary" id="skipBtn">Pular questão</button>
+      <button class="btn-primary hidden" id="nextBtn">Próxima <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <section class="panel hidden" id="finalScreen">
+    <h2 class="section-title">3. Missão concluída!</h2>
+    <p class="section-subtitle">Registre seu nome para salvar a participação e a pontuação.</p>
+
+    <div class="final-grid">
+      <div class="result">
+        <div class="eyebrow"><i class="fa-solid fa-trophy"></i> Resultado</div>
+        <p style="margin:0;color:#334155;font-weight:700">Sua pontuação final foi:</p>
+        <div class="result-score"><span id="finalScore">0</span> pontos</div>
+        <p id="finalMessage" style="margin:0;line-height:1.6;color:#334155"></p>
+      </div>
+
+      <div class="form">
+        <label for="studentName">Nome do aluno</label>
+        <input type="text" id="studentName" placeholder="Digite seu nome completo">
+
+        <label for="studentClass">Turma / escola</label>
+        <input type="text" id="studentClass" placeholder="Ex.: 6º ano - Escola ...">
+
+        <button class="btn-primary" id="sendBtn">Enviar resultado <i class="fa-solid fa-paper-plane"></i></button>
+        <div class="status" id="sendStatus"></div>
+
+        
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoeygTm-R27yb8QOcdH0s7fViv6vGPQ5MtDuCgHBt3RhvFVQKlGxf3A7yQUR3RfRqFcw/exec";
+
+const components = [
+  {id:"arduino", name:"Arduino", icon:"fa-solid fa-microchip", image:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MjAgMzAwIj4KICAgICAgPHJlY3Qgd2lkdGg9IjUyMCIgaGVpZ2h0PSIzMDAiIHJ4PSIzMiIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI0OTIiIGhlaWdodD0iMjcyIiByeD0iMjgiIGZpbGw9IiNmMGZkZjQiIHN0cm9rZT0iI2JiZjdkMCIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgICAgIAogICAgICAgIDxyZWN0IHg9IjkwIiB5PSI1NSIgd2lkdGg9IjM0MCIgaGVpZ2h0PSIxOTAiIHJ4PSIyOCIgZmlsbD0iIzIyYzU1ZSIvPgogICAgICAgIDxyZWN0IHg9IjEyNSIgeT0iODgiIHdpZHRoPSIxMTUiIGhlaWdodD0iODAiIHJ4PSIxNCIgZmlsbD0iI2RjZmNlNyIvPgogICAgICAgIDxjaXJjbGUgY3g9IjMzNSIgY3k9IjEyOCIgcj0iMzgiIGZpbGw9IiNmOGZhZmMiLz4KICAgICAgICA8Y2lyY2xlIGN4PSIzMzUiIGN5PSIxMjgiIHI9IjE4IiBmaWxsPSIjOTRhM2I4Ii8+CiAgICAgICAgPHJlY3QgeD0iMjYwIiB5PSIxNzgiIHdpZHRoPSIxMjAiIGhlaWdodD0iMzIiIHJ4PSIxMCIgZmlsbD0iIzE2NjUzNCIvPgogICAgICAgIDxnIGZpbGw9IiMwZjE3MmEiPgogICAgICAgICAgPHJlY3QgeD0iMTA1IiB5PSI0MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjIyIi8+PHJlY3QgeD0iMTM1IiB5PSI0MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjIyIi8+PHJlY3QgeD0iMTY1IiB5PSI0MiIgd2lkdGg9IjE4IiBoZWlnaHQ9IjIyIi8+CiAgICAgICAgICA8cmVjdCB4PSIxOTUiIHk9IjQyIiB3aWR0aD0iMTgiIGhlaWdodD0iMjIiLz48cmVjdCB4PSIyMjUiIHk9IjQyIiB3aWR0aD0iMTgiIGhlaWdodD0iMjIiLz48cmVjdCB4PSIyNTUiIHk9IjQyIiB3aWR0aD0iMTgiIGhlaWdodD0iMjIiLz4KICAgICAgICAgIDxyZWN0IHg9IjI4NSIgeT0iNDIiIHdpZHRoPSIxOCIgaGVpZ2h0PSIyMiIvPjxyZWN0IHg9IjMxNSIgeT0iNDIiIHdpZHRoPSIxOCIgaGVpZ2h0PSIyMiIvPgogICAgICAgIDwvZz4KICAgICAgPHRleHQgeD0iMjYwIiB5PSIyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzE0NTMyZCI+QXJkdWlubzwvdGV4dD4KICAgIDwvc3ZnPg==", short:"O cérebro do projeto.", text:"A placa Arduino funciona como o cérebro do projeto. Ela recebe comandos da programação e controla componentes como LEDs, sensores e motores."},
+  {id:"protoboard", name:"Protoboard", icon:"fa-solid fa-grip", image:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MjAgMzAwIj4KICAgICAgPHJlY3Qgd2lkdGg9IjUyMCIgaGVpZ2h0PSIzMDAiIHJ4PSIzMiIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI0OTIiIGhlaWdodD0iMjcyIiByeD0iMjgiIGZpbGw9IiNmMGZkZjQiIHN0cm9rZT0iI2JiZjdkMCIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgICAgIAogICAgICAgIDxyZWN0IHg9IjcwIiB5PSI1NSIgd2lkdGg9IjM4MCIgaGVpZ2h0PSIxOTAiIHJ4PSIyNCIgZmlsbD0iI2Y4ZmFmYyIgc3Ryb2tlPSIjY2JkNWUxIiBzdHJva2Utd2lkdGg9IjYiLz4KICAgICAgICA8bGluZSB4MT0iOTYiIHkxPSI3NCIgeDI9IjQyNCIgeTI9Ijc0IiBzdHJva2U9IiNlZjQ0NDQiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICAgICAgPGxpbmUgeDE9Ijk2IiB5MT0iMjI2IiB4Mj0iNDI0IiB5Mj0iMjI2IiBzdHJva2U9IiMzYjgyZjYiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICAgICAgPGNpcmNsZSBjeD0iOTUiIGN5PSI4NCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjExOSIgY3k9Ijg0IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMTQzIiBjeT0iODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIxNjciIGN5PSI4NCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjE5MSIgY3k9Ijg0IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMjE1IiBjeT0iODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIyMzkiIGN5PSI4NCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjI2MyIgY3k9Ijg0IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMjg3IiBjeT0iODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzMTEiIGN5PSI4NCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjMzNSIgY3k9Ijg0IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMzU5IiBjeT0iODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzODMiIGN5PSI4NCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjQwNyIgY3k9Ijg0IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iOTUiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIxMTkiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIxNDMiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIxNjciIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIxOTEiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIyMTUiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIyMzkiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIyNjMiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIyODciIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzMTEiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzMzUiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzNTkiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzODMiIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSI0MDciIGN5PSIxMDkiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSI5NSIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjExOSIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjE0MyIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjE2NyIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjE5MSIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjIxNSIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjIzOSIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjI2MyIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjI4NyIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjMxMSIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjMzNSIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjM1OSIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjM4MyIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9IjQwNyIgY3k9IjEzNCIgcj0iNSIgZmlsbD0iIzY0NzQ4YiIvPjxjaXJjbGUgY3g9Ijk1IiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMTE5IiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMTQzIiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMTY3IiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMTkxIiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMjE1IiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMjM5IiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMjYzIiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMjg3IiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMzExIiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMzM1IiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMzU5IiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iMzgzIiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iNDA3IiBjeT0iMTU5IiByPSI1IiBmaWxsPSIjNjQ3NDhiIi8+PGNpcmNsZSBjeD0iOTUiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIxMTkiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIxNDMiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIxNjciIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIxOTEiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIyMTUiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIyMzkiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIyNjMiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIyODciIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzMTEiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzMzUiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzNTkiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSIzODMiIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz48Y2lyY2xlIGN4PSI0MDciIGN5PSIxODQiIHI9IjUiIGZpbGw9IiM2NDc0OGIiLz4KICAgICAgPHRleHQgeD0iMjYwIiB5PSIyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzE0NTMyZCI+UHJvdG9ib2FyZDwvdGV4dD4KICAgIDwvc3ZnPg==", short:"Monta circuitos sem solda.", text:"A protoboard é uma placa cheia de furinhos. Ela permite montar e testar circuitos eletrônicos sem precisar soldar os componentes."},
+  {id:"led", name:"LED", icon:"fa-regular fa-lightbulb", image:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MjAgMzAwIj4KICAgICAgPHJlY3Qgd2lkdGg9IjUyMCIgaGVpZ2h0PSIzMDAiIHJ4PSIzMiIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI0OTIiIGhlaWdodD0iMjcyIiByeD0iMjgiIGZpbGw9IiNmMGZkZjQiIHN0cm9rZT0iI2JiZjdkMCIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgICAgIAogICAgICAgIDxwYXRoIGQ9Ik0yMjAgNzAgUTI2MCAyNSAzMDAgNzAgTDMwMCAxNDUgUTI2MCAxODAgMjIwIDE0NSBaIiBmaWxsPSIjZWY0NDQ0Ii8+CiAgICAgICAgPHJlY3QgeD0iMjI1IiB5PSIxNDAiIHdpZHRoPSI3MCIgaGVpZ2h0PSIyMiIgcng9IjkiIGZpbGw9IiM5OTFiMWIiLz4KICAgICAgICA8bGluZSB4MT0iMjQwIiB5MT0iMTYyIiB4Mj0iMjQwIiB5Mj0iMjM1IiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICAgICAgPGxpbmUgeDE9IjI4MiIgeTE9IjE2MiIgeDI9IjI4MiIgeTI9IjIzNSIgc3Ryb2tlPSIjNjQ3NDhiIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICAgIDxwYXRoIGQ9Ik0zMDUgNTUgTDMzNSAyNSBNMzI1IDg0IEwzNjMgNzAiIHN0cm9rZT0iI2Y1OWUwYiIgc3Ryb2tlLXdpZHRoPSI4IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgICAgPHRleHQgeD0iMjYwIiB5PSIyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzE0NTMyZCI+TEVEPC90ZXh0PgogICAgPC9zdmc+", short:"Uma pequena luz.", text:"O LED é uma pequena luz que pode acender ou apagar. Ele tem lado certo para ligar: uma perninha é positiva e a outra é negativa."},
+  {id:"resistor", name:"Resistor", icon:"fa-solid fa-wave-square", image:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MjAgMzAwIj4KICAgICAgPHJlY3Qgd2lkdGg9IjUyMCIgaGVpZ2h0PSIzMDAiIHJ4PSIzMiIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI0OTIiIGhlaWdodD0iMjcyIiByeD0iMjgiIGZpbGw9IiNmMGZkZjQiIHN0cm9rZT0iI2JiZjdkMCIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgICAgIAogICAgICAgIDxsaW5lIHgxPSI1NSIgeTE9IjE1MCIgeDI9IjE1MCIgeTI9IjE1MCIgc3Ryb2tlPSIjNjQ3NDhiIiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgICAgICA8bGluZSB4MT0iMzcwIiB5MT0iMTUwIiB4Mj0iNDY1IiB5Mj0iMTUwIiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICAgIDxyZWN0IHg9IjE1MCIgeT0iMTA1IiB3aWR0aD0iMjIwIiBoZWlnaHQ9IjkwIiByeD0iNDAiIGZpbGw9IiNmYmJmMjQiLz4KICAgICAgICA8cmVjdCB4PSIxOTAiIHk9IjEwNSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjkwIiBmaWxsPSIjN2MyZDEyIi8+CiAgICAgICAgPHJlY3QgeD0iMjM1IiB5PSIxMDUiIHdpZHRoPSIxNiIgaGVpZ2h0PSI5MCIgZmlsbD0iI2VmNDQ0NCIvPgogICAgICAgIDxyZWN0IHg9IjI4MCIgeT0iMTA1IiB3aWR0aD0iMTYiIGhlaWdodD0iOTAiIGZpbGw9IiMzYjgyZjYiLz4KICAgICAgICA8cmVjdCB4PSIzMjUiIHk9IjEwNSIgd2lkdGg9IjE2IiBoZWlnaHQ9IjkwIiBmaWxsPSIjZjhmYWZjIi8+CiAgICAgIDx0ZXh0IHg9IjI2MCIgeT0iMjgwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjYiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiMxNDUzMmQiPlJlc2lzdG9yPC90ZXh0PgogICAgPC9zdmc+", short:"Ajuda a proteger.", text:"O resistor dificulta a passagem da corrente elétrica. Em muitos circuitos, ele ajuda a proteger componentes como o LED."},
+  {id:"jumpers", name:"Jumpers", icon:"fa-solid fa-plug", image:"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MjAgMzAwIj4KICAgICAgPHJlY3Qgd2lkdGg9IjUyMCIgaGVpZ2h0PSIzMDAiIHJ4PSIzMiIgZmlsbD0iI2ZmZmZmZiIvPgogICAgICA8cmVjdCB4PSIxNCIgeT0iMTQiIHdpZHRoPSI0OTIiIGhlaWdodD0iMjcyIiByeD0iMjgiIGZpbGw9IiNmMGZkZjQiIHN0cm9rZT0iI2JiZjdkMCIgc3Ryb2tlLXdpZHRoPSI0Ii8+CiAgICAgIAogICAgICAgIDxwYXRoIGQ9Ik0xMDAgMjE1IEMxNDAgMTAwLCAxODAgMTAwLCAyMjAgMjE1IiBzdHJva2U9IiNlZjQ0NDQiIHN0cm9rZS13aWR0aD0iMTYiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogICAgICAgIDxwYXRoIGQ9Ik0xNzAgMjE1IEMyMTAgNzAsIDI1MCA3MCwgMjkwIDIxNSIgc3Ryb2tlPSIjMjJjNTVlIiBzdHJva2Utd2lkdGg9IjE2IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgICAgICA8cGF0aCBkPSJNMjQwIDIxNSBDMjgwIDEwMCwgMzIwIDEwMCwgMzYwIDIxNSIgc3Ryb2tlPSIjM2I4MmY2IiBzdHJva2Utd2lkdGg9IjE2IiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgICAgICA8Y2lyY2xlIGN4PSIxMDAiIGN5PSIyMTUiIHI9IjE2IiBmaWxsPSIjMGYxNzJhIi8+PGNpcmNsZSBjeD0iMjIwIiBjeT0iMjE1IiByPSIxNiIgZmlsbD0iIzBmMTcyYSIvPgogICAgICAgIDxjaXJjbGUgY3g9IjE3MCIgY3k9IjIxNSIgcj0iMTYiIGZpbGw9IiMwZjE3MmEiLz48Y2lyY2xlIGN4PSIyOTAiIGN5PSIyMTUiIHI9IjE2IiBmaWxsPSIjMGYxNzJhIi8+CiAgICAgICAgPGNpcmNsZSBjeD0iMjQwIiBjeT0iMjE1IiByPSIxNiIgZmlsbD0iIzBmMTcyYSIvPjxjaXJjbGUgY3g9IjM2MCIgY3k9IjIxNSIgcj0iMTYiIGZpbGw9IiMwZjE3MmEiLz4KICAgICAgPHRleHQgeD0iMjYwIiB5PSIyODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNiIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzE0NTMyZCI+SnVtcGVyczwvdGV4dD4KICAgIDwvc3ZnPg==", short:"Cabos de ligação.", text:"Os jumpers são fios usados para conectar o Arduino, a protoboard e os componentes do circuito."}
+];
+
+const questions = [
+  {text:"Qual componente funciona como o cérebro do projeto?", options:["Protoboard","Arduino","LED","Jumper"], correct:1, explain:"Muito bem! O Arduino é como o cérebro: ele executa os comandos e controla os componentes."},
+  {text:"Qual componente usamos para montar circuitos sem soldar?", options:["Protoboard","Resistor","LED","Sensor de luz"], correct:0, explain:"Correto! A protoboard permite montar circuitos encaixando fios e componentes."},
+  {text:"Qual componente acende como uma pequena luz?", options:["Resistor","Jumper","LED","Arduino"], correct:2, explain:"Isso mesmo! O LED é uma pequena luz que pode ser controlada no projeto."},
+  {text:"Qual peça costuma ajudar a proteger o LED em um circuito?", options:["Resistor","Protoboard","Cabo USB","Motor"], correct:0, explain:"Perfeito! O resistor limita a corrente elétrica e ajuda a proteger o LED."},
+  {text:"Para que servem os jumpers?", options:["Para escrever código","Para conectar componentes","Para medir temperatura","Para guardar energia"], correct:1, explain:"Ótimo! Os jumpers são fios usados para fazer as ligações entre as peças."},
+  {text:"No Tinkercad, o que podemos fazer com esses componentes?", options:["Apenas desenhar","Simular circuitos","Imprimir textos","Editar vídeos"], correct:1, explain:"Excelente! No Tinkercad podemos montar e simular circuitos antes de usar os componentes físicos."}
+];
+
+let score = 0;
+let viewed = new Set();
+let currentQuestion = 0;
+let answered = false;
+
+const scoreTop = document.getElementById("scoreTop");
+const progressText = document.getElementById("progressText");
+const progressFill = document.getElementById("progressFill");
+const grid = document.getElementById("componentsGrid");
+const detailBox = document.getElementById("detailBox");
+const detailImage = document.getElementById("detailImage");
+const detailTitle = document.getElementById("detailTitle");
+const detailText = document.getElementById("detailText");
+const startQuizBtn = document.getElementById("startQuizBtn");
+const exploreScreen = document.getElementById("exploreScreen");
+const quizScreen = document.getElementById("quizScreen");
+const finalScreen = document.getElementById("finalScreen");
+const questionNumber = document.getElementById("questionNumber");
+const questionText = document.getElementById("questionText");
+const optionsBox = document.getElementById("optionsBox");
+const feedbackBox = document.getElementById("feedbackBox");
+const nextBtn = document.getElementById("nextBtn");
+const skipBtn = document.getElementById("skipBtn");
+const finalScore = document.getElementById("finalScore");
+const finalMessage = document.getElementById("finalMessage");
+const sendBtn = document.getElementById("sendBtn");
+const sendStatus = document.getElementById("sendStatus");
+
+function updateScore(points){
+  score += points;
+  scoreTop.textContent = score;
+}
+
+function updateProgress(){
+  const explorationProgress = (viewed.size / components.length) * 40;
+  const quizProgress = (currentQuestion / questions.length) * 60;
+  const total = Math.min(100, Math.round(explorationProgress + quizProgress));
+  progressText.textContent = total + "%";
+  progressFill.style.width = total + "%";
+}
+
+function renderComponents(){
+  grid.innerHTML = "";
+  components.forEach(c => {
+    const card = document.createElement("button");
+    card.className = "component" + (viewed.has(c.id) ? " seen" : "");
+    card.innerHTML = viewed.has(c.id) ? `
+      <span class="check"><i class="fa-solid fa-check"></i></span>
+      <div class="comp-icon"><i class="${c.icon}"></i></div>
+      <h3>${c.name}</h3>
+      <p>${c.short}</p>
+    ` : `
+      <span class="check"><i class="fa-solid fa-check"></i></span>
+      <div class="comp-icon"><i class="fa-solid fa-circle-question"></i></div>
+      <h3>Componente misterioso</h3>
+      <p>Toque para descobrir</p>
+    `;
+    card.addEventListener("click", () => openComponent(c));
+    grid.appendChild(card);
+  });
+}
+
+function openComponent(component){
+  const firstTime = !viewed.has(component.id);
+  viewed.add(component.id);
+
+  detailBox.classList.remove("hidden");
+  detailImage.src = component.image;
+  detailImage.alt = "Imagem de " + component.name;
+  detailTitle.textContent = component.name;
+  detailText.textContent = component.text;
+
+  if(firstTime){
+    updateScore(10);
+    burstConfetti();
+  }
+
+  renderComponents();
+
+  if(viewed.size === components.length){
+    startQuizBtn.disabled = false;
+  }
+
+  updateProgress();
+}
+
+function showQuiz(){
+  exploreScreen.classList.add("hidden");
+  quizScreen.classList.remove("hidden");
+  currentQuestion = 0;
+  renderQuestion();
+  updateProgress();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function renderQuestion(){
+  answered = false;
+  nextBtn.classList.add("hidden");
+  feedbackBox.className = "feedback";
+  feedbackBox.textContent = "";
+
+  const q = questions[currentQuestion];
+  questionNumber.textContent = `Questão ${currentQuestion + 1} de ${questions.length}`;
+  questionText.textContent = q.text;
+  optionsBox.innerHTML = "";
+
+  q.options.forEach((op, index) => {
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.innerHTML = `<i class="fa-regular fa-circle"></i><span>${op}</span>`;
+    btn.addEventListener("click", () => answerQuestion(index, btn));
+    optionsBox.appendChild(btn);
+  });
+}
+
+function answerQuestion(index, selectedButton){
+  if(answered) return;
+  answered = true;
+  const q = questions[currentQuestion];
+  const buttons = [...document.querySelectorAll(".option")];
+
+  buttons.forEach((b, i) => {
+    b.classList.add("disabled");
+    if(i === q.correct){
+      b.classList.add("correct");
+      b.querySelector("i").className = "fa-solid fa-circle-check";
+    }
+  });
+
+  if(index === q.correct){
+    updateScore(20);
+    feedbackBox.className = "feedback ok show";
+    feedbackBox.textContent = q.explain;
+    burstConfetti();
+  } else {
+    selectedButton.classList.add("wrong");
+    selectedButton.querySelector("i").className = "fa-solid fa-circle-xmark";
+    feedbackBox.className = "feedback bad show";
+    feedbackBox.textContent = "Quase! Observe a alternativa correta em verde. " + q.explain;
+  }
+  nextBtn.classList.remove("hidden");
+}
+
+function nextQuestion(){
+  currentQuestion++;
+  updateProgress();
+  if(currentQuestion >= questions.length) finish();
+  else renderQuestion();
+}
+
+function skipQuestion(){
+  if(answered) return;
+  currentQuestion++;
+  updateProgress();
+  if(currentQuestion >= questions.length) finish();
+  else renderQuestion();
+}
+
+function finish(){
+  quizScreen.classList.add("hidden");
+  finalScreen.classList.remove("hidden");
+  progressText.textContent = "100%";
+  progressFill.style.width = "100%";
+  finalScore.textContent = score;
+
+  if(score >= 150) finalMessage.textContent = "Excelente! Você explorou muito bem os componentes e já está pronto para começar os primeiros circuitos.";
+  else if(score >= 100) finalMessage.textContent = "Muito bom! Você já reconhece os principais componentes usados nos projetos com Arduino.";
+  else finalMessage.textContent = "Você concluiu a missão. Nas próximas aulas, vamos praticar mais com os componentes reais e no Tinkercad.";
+
+  burstConfetti();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function burstConfetti(){
+  const confetti = document.getElementById("confetti");
+  const colors = ["#22c55e","#3b82f6","#f59e0b","#ef4444","#a855f7"];
+  for(let i=0;i<28;i++){
+    const piece = document.createElement("span");
+    piece.style.left = Math.random()*100 + "vw";
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDelay = Math.random()*150 + "ms";
+    piece.style.transform = `rotate(${Math.random()*360}deg)`;
+    confetti.appendChild(piece);
+    setTimeout(() => piece.remove(), 1100);
+  }
+}
+
+async function sendResult(){
+  const name = document.getElementById("studentName").value.trim();
+  const turma = document.getElementById("studentClass").value.trim();
+
+  if(!name){
+    sendStatus.textContent = "Digite o nome do aluno antes de enviar.";
+    return;
+  }
+
+  if(APPS_SCRIPT_URL === "COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT"){
+    sendStatus.textContent = "Resultado registrado localmente. Para salvar na planilha, configure a URL do Apps Script no código.";
+    return;
+  }
+
+  const payload = {
+    objeto: "Laboratório Misterioso aula 1",
+    atividade: "Laboratório Misterioso aula 1",
+    nome: name,
+    turma: turma,
+    pontuacao: score,
+    totalPossivel: components.length * 10 + questions.length * 20,
+    dataHora: new Date().toLocaleString("pt-BR")
+  };
+
+  sendBtn.disabled = true;
+  sendStatus.textContent = "Enviando resultado...";
+
+  try{
+    await fetch(APPS_SCRIPT_URL, {
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    sendStatus.textContent = "Resultado enviado! Se a URL estiver correta, os dados foram gravados na planilha.";
+  }catch(e){
+    sendStatus.textContent = "Não foi possível enviar. Verifique a URL do Apps Script e a publicação do Web App.";
+  }finally{
+    sendBtn.disabled = false;
+  }
+}
+
+startQuizBtn.addEventListener("click", showQuiz);
+nextBtn.addEventListener("click", nextQuestion);
+skipBtn.addEventListener("click", skipQuestion);
+sendBtn.addEventListener("click", sendResult);
+
+renderComponents();
+updateProgress();
+</script>
+</body>
+</html>
