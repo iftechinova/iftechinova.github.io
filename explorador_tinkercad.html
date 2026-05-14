@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Explorador do Tinkercad | IFTechInova</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+  --primary:#22c55e;
+  --primary-dark:#16a34a;
+  --soft:#dcfce7;
+  --text:#0f172a;
+  --muted:#64748b;
+  --card:#fff;
+  --shadow:0 18px 45px rgba(15,23,42,.10);
+  --danger:#ef4444;
+  --warning:#f59e0b;
+  --blue:#3b82f6;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter, sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at top left,rgba(34,197,94,.18),transparent 28%),
+    radial-gradient(circle at bottom right,rgba(59,130,246,.14),transparent 34%),
+    linear-gradient(135deg,#f0fdf4,#eff6ff);
+  min-height:100vh;
+}
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(255,255,255,.88);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid #e2e8f0;
+}
+.topbar-inner{
+  max-width:1120px;
+  margin:auto;
+  padding:14px 20px;
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+}
+.back-link{
+  text-decoration:none;
+  color:#166534;
+  font-weight:800;
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.score{
+  background:white;
+  border:1px solid #bbf7d0;
+  border-radius:999px;
+  padding:9px 14px;
+  font-weight:800;
+  box-shadow:0 8px 24px rgba(34,197,94,.12);
+}
+.score i{color:#f59e0b}
+main{max-width:1120px;margin:auto;padding:34px 20px 60px}
+.hero{display:grid;grid-template-columns:1.25fr .75fr;gap:22px;margin-bottom:22px}
+.card,.panel{
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(148,163,184,.25);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+}
+.card{padding:32px}
+.eyebrow{
+  display:inline-flex;
+  gap:8px;
+  align-items:center;
+  background:var(--soft);
+  color:#15803d;
+  font-weight:800;
+  border-radius:999px;
+  padding:7px 12px;
+  margin-bottom:16px;
+}
+h1{
+  font-family:"Space Grotesk";
+  font-size:clamp(2rem,5vw,4rem);
+  line-height:1;
+  margin:0 0 14px;
+  letter-spacing:-.04em;
+}
+.lead{font-size:1.08rem;color:#334155;line-height:1.65;margin:0}
+.side{padding:24px;display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.big-icon{
+  width:78px;height:78px;border-radius:24px;
+  background:linear-gradient(135deg,#22c55e,#86efac);
+  display:grid;place-items:center;color:white;font-size:2rem;
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.progress-info{display:flex;justify-content:space-between;color:var(--muted);font-weight:800;font-size:.9rem;margin-bottom:8px}
+.progress-bar{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#22c55e,#3b82f6);transition:.4s}
+.panel{padding:26px;margin-bottom:22px}
+.hidden{display:none!important}
+.section-title{font-family:"Space Grotesk";font-size:1.7rem;margin:0 0 8px}
+.section-subtitle{margin:0 0 20px;color:var(--muted);line-height:1.6}
+.actions{margin-top:22px;display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+button{
+  font-family:Inter;border:0;border-radius:999px;
+  padding:13px 18px;font-weight:800;cursor:pointer;transition:.2s;
+}
+.btn-primary{background:#22c55e;color:white;box-shadow:0 12px 26px rgba(34,197,94,.24)}
+.btn-primary:hover{background:#16a34a;transform:translateY(-2px)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn-secondary{background:white;color:#166534;border:1px solid #86efac}
+.btn-secondary:hover{transform:translateY(-2px)}
+
+.interface-layout{
+  display:grid;
+  grid-template-columns:1fr .9fr;
+  gap:20px;
+  align-items:start;
+}
+.interface-map{
+  background:#f8fafc;
+  border:1px solid #cbd5e1;
+  border-radius:26px;
+  padding:18px;
+  box-shadow:0 16px 34px rgba(15,23,42,.08);
+}
+.browser-top{
+  background:#0f172a;
+  color:white;
+  border-radius:20px 20px 0 0;
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.browser-dots{display:flex;gap:6px}
+.browser-dots span{width:11px;height:11px;border-radius:50%;background:#94a3b8}
+.browser-title{font-weight:900;font-size:.92rem}
+.tinker-screen{
+  border:1px solid #cbd5e1;
+  border-top:0;
+  background:#fff;
+  border-radius:0 0 20px 20px;
+  overflow:hidden;
+}
+.tinker-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px;
+  background:#f1f5f9;
+  border-bottom:1px solid #cbd5e1;
+}
+.fake-logo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:900;
+  color:#0f172a;
+}
+.fake-logo i{color:#22c55e}
+.fake-sim{
+  background:#22c55e;
+  color:#052e16;
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:.82rem;
+  font-weight:900;
+}
+.tinker-body{
+  display:grid;
+  grid-template-columns:1fr 160px;
+  min-height:290px;
+}
+.fake-workspace{
+  background:
+    linear-gradient(rgba(15,23,42,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(15,23,42,.05) 1px,transparent 1px),
+    #f8fafc;
+  background-size:26px 26px;
+  position:relative;
+  padding:16px;
+}
+.fake-component{
+  position:absolute;
+  display:grid;
+  place-items:center;
+  border-radius:18px;
+  background:white;
+  border:1px solid #cbd5e1;
+  box-shadow:0 8px 20px rgba(15,23,42,.08);
+  color:#15803d;
+  font-size:1.4rem;
+}
+.fake-arduino{width:130px;height:82px;left:36px;top:52px}
+.fake-board{width:160px;height:78px;right:42px;bottom:48px}
+.fake-led{width:54px;height:54px;left:42%;top:45%}
+.fake-wire{
+  position:absolute;
+  height:5px;
+  border-radius:99px;
+  background:#ef4444;
+  transform:rotate(18deg);
+  width:150px;
+  left:150px;
+  top:150px;
+}
+.fake-panel{
+  border-left:1px solid #cbd5e1;
+  background:#fff;
+  padding:12px;
+}
+.fake-panel h4{margin:0 0 10px;font-size:.86rem;color:#334155}
+.fake-panel-item{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  padding:9px;
+  border-radius:14px;
+  background:#f8fafc;
+  border:1px solid #e2e8f0;
+  margin-bottom:8px;
+  color:#334155;
+  font-size:.84rem;
+  font-weight:800;
+}
+.fake-panel-item i{color:#15803d;width:18px;text-align:center}
+
+.discovery-list{display:grid;gap:12px}
+.discovery-card{
+  width:100%;
+  text-align:left;
+  background:#fff;
+  border:2px solid transparent;
+  border-radius:22px;
+  padding:16px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:14px;
+  align-items:center;
+  color:#0f172a;
+  box-shadow:0 8px 22px rgba(15,23,42,.05);
+}
+.discovery-card:hover{border-color:#86efac;transform:translateY(-2px)}
+.discovery-card.done{
+  background:#f0fdf4;
+  border-color:#22c55e;
+}
+.discovery-icon{
+  width:54px;height:54px;border-radius:18px;
+  background:#dcfce7;color:#15803d;
+  display:grid;place-items:center;font-size:1.35rem;
+}
+.discovery-card h3{margin:0 0 4px;font-size:1.02rem}
+.discovery-card p{margin:0;color:#64748b;font-size:.9rem;line-height:1.4}
+.discovery-check{
+  width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#e2e8f0;color:#64748b;
+}
+.discovery-card.done .discovery-check{background:#22c55e;color:#fff}
+.info-box{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:16px;
+  align-items:center;
+  background:#f0fdf4;
+  border:1px solid #bbf7d0;
+  border-radius:24px;
+  padding:18px;
+  animation:reveal .32s ease;
+}
+@keyframes reveal{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.info-icon{
+  width:62px;height:62px;border-radius:20px;
+  display:grid;place-items:center;background:white;color:#15803d;
+  font-size:1.6rem;box-shadow:0 10px 26px rgba(34,197,94,.12);
+}
+.info-box h3{margin:0 0 6px;font-family:"Space Grotesk";font-size:1.25rem}
+.info-box p{margin:0;color:#334155;line-height:1.6}
+
+.parts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.part-card{
+  background:white;border:1px solid #cbd5e1;border-radius:22px;
+  min-height:150px;padding:16px;text-align:center;
+  cursor:pointer;transition:.2s;position:relative;
+}
+.part-card:hover{transform:translateY(-4px);border-color:#86efac;box-shadow:0 14px 30px rgba(15,23,42,.09)}
+.part-card.selected{border-color:#22c55e;background:#f0fdf4}
+.part-card.correct{border-color:#22c55e;background:#dcfce7;animation:pop .42s}
+.part-card.wrong{border-color:#ef4444;background:#fee2e2;animation:shake .35s}
+.part-icon{
+  width:60px;height:60px;border-radius:20px;background:#dcfce7;color:#15803d;
+  display:grid;place-items:center;margin:0 auto 12px;font-size:1.7rem;
+}
+.part-card h3{font-size:1rem;margin:0 0 7px}
+.part-card p{font-size:.86rem;color:#64748b;line-height:1.4;margin:0}
+.sequence-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.sequence-list,.sequence-target{background:#fff;border:1px solid #cbd5e1;border-radius:24px;padding:18px}
+.seq-item{
+  width:100%;
+  display:flex;align-items:center;gap:12px;
+  background:#f8fafc;border:2px solid transparent;color:#0f172a;
+  border-radius:18px;margin-bottom:10px;padding:14px;
+  text-align:left;
+}
+.seq-item:hover{border-color:#86efac;transform:translateY(-2px)}
+.seq-number{
+  width:32px;height:32px;border-radius:50%;
+  display:grid;place-items:center;background:#dcfce7;color:#15803d;font-weight:900;
+}
+.slot{
+  min-height:60px;border:2px dashed #cbd5e1;border-radius:18px;
+  display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:10px;
+  color:#64748b;font-weight:800;background:#f8fafc;
+}
+.slot.filled{border-style:solid;border-color:#22c55e;background:#f0fdf4;color:#0f172a}
+.slot i{color:#15803d}
+.quiz-card{background:white;border:1px solid #cbd5e1;border-radius:24px;padding:24px}
+.qnum{color:#15803d;font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:.88rem;margin-bottom:8px}
+.qtext{font-family:"Space Grotesk";font-size:1.6rem;margin:0 0 20px}
+.options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.option{
+  text-align:left;background:#f8fafc;color:#0f172a;border:2px solid transparent;
+  border-radius:20px;padding:16px;display:flex;gap:12px;align-items:center;
+}
+.option:hover{background:white;border-color:#86efac;transform:translateY(-2px)}
+.option.correct{background:#dcfce7;border-color:#22c55e;animation:pop .5s}
+.option.wrong{background:#fee2e2;border-color:#ef4444;animation:shake .35s}
+.option.disabled{pointer-events:none;opacity:.9}
+@keyframes pop{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.feedback{display:none;margin-top:16px;border-radius:18px;padding:14px 16px;font-weight:700;line-height:1.5}
+.feedback.show{display:block}
+.feedback.ok{background:#dcfce7;color:#14532d}
+.feedback.bad{background:#fee2e2;color:#7f1d1d}
+.final-grid{display:grid;grid-template-columns:1fr .9fr;gap:20px}
+.result{background:linear-gradient(135deg,#dcfce7,#dbeafe);border:1px solid #bbf7d0;border-radius:24px;padding:26px}
+.result-score{font-family:"Space Grotesk";font-size:3.2rem;letter-spacing:-.04em;margin:8px 0}
+.form{background:white;border:1px solid #cbd5e1;border-radius:24px;padding:24px}
+label{display:block;font-weight:800;margin-bottom:8px}
+input{width:100%;border:1px solid #cbd5e1;border-radius:16px;padding:13px 14px;font:inherit;margin-bottom:14px}
+input:focus{outline:0;border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.14)}
+.status{margin-top:12px;color:#64748b;font-weight:700;line-height:1.5}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:99}
+.confetti span{position:absolute;top:-20px;width:10px;height:16px;border-radius:4px;animation:fall .9s ease-out forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:0}}
+@media(max-width:900px){
+  .hero,.final-grid,.sequence-wrap,.interface-layout{grid-template-columns:1fr}
+  .parts-grid{grid-template-columns:repeat(2,1fr)}
+  .options{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .topbar-inner{flex-direction:column;align-items:flex-start}
+  .parts-grid{grid-template-columns:1fr}
+  .tinker-body{grid-template-columns:1fr}
+  .fake-panel{border-left:0;border-top:1px solid #cbd5e1}
+  .fake-workspace{min-height:260px}
+}
+</style>
+</head>
+
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <a class="back-link" href="objetos.html"><i class="fa-solid fa-arrow-left"></i> Voltar aos objetos</a>
+    <div class="score"><i class="fa-solid fa-star"></i> Pontos: <span id="scoreTop">0</span></div>
+  </div>
+</div>
+
+<main>
+  <section class="hero">
+    <div class="card">
+      <div class="eyebrow"><i class="fa-solid fa-cube"></i> IFTechInova · Tinkercad</div>
+      <h1>Explorador do Tinkercad</h1>
+      <p class="lead">
+        Escolha os componentes de um circuito simples, organize os passos da montagem e revise conceitos importantes antes de praticar no Tinkercad.
+      </p>
+    </div>
+    <aside class="card side">
+      <div class="big-icon"><i class="fa-solid fa-laptop-code"></i></div>
+      <div>
+        <p class="section-subtitle">Escolha, organize, revise e registre sua participação.</p>
+        <div class="progress-info"><span>Progresso</span><span id="progressText">0%</span></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="panel" id="screenParts">
+    <h2 class="section-title">1. Escolha os componentes do primeiro circuito</h2>
+    <p class="section-subtitle">
+      Para montar um circuito simples com LED no laboratório virtual, escolha apenas os componentes essenciais.
+    </p>
+
+    <div class="parts-grid" id="partsGrid"></div>
+
+    <div class="info-box" id="partsFeedback">
+      <div class="info-icon"><i class="fa-solid fa-lightbulb"></i></div>
+      <div>
+        <h3>Missão</h3>
+        <p>Clique nos componentes necessários para montar um circuito básico com LED.</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-secondary" id="btnResetParts">Limpar seleção</button>
+      <button class="btn-primary" id="btnCheckParts">Verificar seleção</button>
+    </div>
+  </section>
+
+  <section class="panel hidden" id="screenSequence">
+    <h2 class="section-title">2. Organize os passos da montagem</h2>
+    <p class="section-subtitle">
+      Clique nos passos na ordem mais adequada para começar a montar e testar o circuito.
+    </p>
+
+    <div class="sequence-wrap">
+      <div class="sequence-list">
+        <h3 class="section-title" style="font-size:1.2rem;">Passos disponíveis</h3>
+        <div id="sequenceButtons"></div>
+      </div>
+
+      <div class="sequence-target">
+        <h3 class="section-title" style="font-size:1.2rem;">Sua sequência</h3>
+        <div class="slot" id="slot1"><i class="fa-regular fa-circle"></i> 1º passo</div>
+        <div class="slot" id="slot2"><i class="fa-regular fa-circle"></i> 2º passo</div>
+        <div class="slot" id="slot3"><i class="fa-regular fa-circle"></i> 3º passo</div>
+        <div class="slot" id="slot4"><i class="fa-regular fa-circle"></i> 4º passo</div>
+      </div>
+    </div>
+
+    <div class="info-box hidden" id="sequenceFeedback">
+      <div class="info-icon"><i class="fa-solid fa-list-check"></i></div>
+      <div>
+        <h3 id="sequenceFeedbackTitle"></h3>
+        <p id="sequenceFeedbackText"></p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-secondary" id="btnResetSequence">Recomeçar sequência</button>
+      <button class="btn-primary" id="btnCheckSequence">Verificar sequência</button>
+    </div>
+  </section>
+
+  <section class="panel hidden" id="screenQuiz">
+    <h2 class="section-title">3. Desafios rápidos</h2>
+    <p class="section-subtitle">
+      Responda às perguntas para revisar o que foi explorado.
+    </p>
+
+    <div class="quiz-card">
+      <div class="qnum" id="questionNumber"></div>
+      <h3 class="qtext" id="questionText"></h3>
+      <div class="options" id="optionsBox"></div>
+      <div class="feedback" id="feedbackBox"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-secondary" id="skipBtn">Pular questão</button>
+      <button class="btn-primary hidden" id="nextBtn">Próxima <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </section>
+
+  <section class="panel hidden" id="finalScreen">
+    <h2 class="section-title">4. Missão concluída!</h2>
+    <p class="section-subtitle">Registre seu nome para salvar a participação e a pontuação.</p>
+
+    <div class="final-grid">
+      <div class="result">
+        <div class="eyebrow"><i class="fa-solid fa-trophy"></i> Resultado</div>
+        <p style="margin:0;color:#334155;font-weight:700">Sua pontuação final foi:</p>
+        <div class="result-score"><span id="finalScore">0</span> pontos</div>
+        <p id="finalMessage" style="margin:0;line-height:1.6;color:#334155"></p>
+      </div>
+
+      <div class="form">
+        <label for="studentName">Nome do aluno</label>
+        <input type="text" id="studentName" placeholder="Digite seu nome completo">
+
+        <label for="studentClass">Turma / escola</label>
+        <input type="text" id="studentClass" placeholder="Ex.: 6º ano - Escola ...">
+
+        <button class="btn-primary" id="sendBtn">Enviar resultado <i class="fa-solid fa-paper-plane"></i></button>
+        <div class="status" id="sendStatus"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzoeygTm-R27yb8QOcdH0s7fViv6vGPQ5MtDuCgHBt3RhvFVQKlGxf3A7yQUR3RfRqFcw/exec";
+const ACTIVITY_NAME = "Explorador do Tinkercad aula 2";
+
+let score = 0;
+let selectedParts = new Set();
+let sequence = [];
+let currentQuestion = 0;
+let answered = false;
+let quizAnsweredCount = 0;
+let partsCompleted = false;
+let sequenceCompleted = false;
+
+const scoreTop = document.getElementById("scoreTop");
+const progressText = document.getElementById("progressText");
+const progressFill = document.getElementById("progressFill");
+
+const screens = {
+  parts: document.getElementById("screenParts"),
+  sequence: document.getElementById("screenSequence"),
+  quiz: document.getElementById("screenQuiz"),
+  final: document.getElementById("finalScreen")
+};
+
+const parts = [
+  {id:"arduino", name:"Arduino", icon:"fa-solid fa-microchip", correct:true, text:"Controla o circuito."},
+  {id:"protoboard", name:"Protoboard", icon:"fa-solid fa-grip", correct:true, text:"Ajuda na montagem."},
+  {id:"led", name:"LED", icon:"fa-regular fa-lightbulb", correct:true, text:"A luz do circuito."},
+  {id:"resistor", name:"Resistor", icon:"fa-solid fa-wave-square", correct:true, text:"Protege o LED."},
+  {id:"buzzer", name:"Buzzer", icon:"fa-solid fa-volume-high", correct:false, text:"Faz som, mas não é necessário agora."},
+  {id:"motor", name:"Motor", icon:"fa-solid fa-gear", correct:false, text:"Gira, mas não é necessário agora."},
+  {id:"sensor", name:"Sensor", icon:"fa-solid fa-satellite-dish", correct:false, text:"Detecta algo, mas fica para depois."},
+  {id:"servo", name:"Servo motor", icon:"fa-solid fa-rotate", correct:false, text:"Movimenta peças, mas fica para depois."}
+];
+
+const fixedPartsOrder = ["arduino", "buzzer", "led", "sensor", "protoboard", "motor", "resistor", "servo"];
+
+const sequenceSteps = [
+  {id:1, text:"Arrastar a protoboard para a área de trabalho"},
+  {id:2, text:"Colocar o Arduino, o LED e o resistor"},
+  {id:3, text:"Fazer as ligações com jumpers"},
+  {id:4, text:"Clicar em iniciar simulação para testar"}
+];
+
+const questions = [
+  {
+    text:"No Tinkercad, onde montamos o circuito virtual?",
+    options:["Na área de trabalho","No botão de ajuda","No campo de nome","Na lixeira"],
+    correct:0,
+    explain:"Correto! A área de trabalho é o espaço em que colocamos e organizamos os componentes."
+  },
+  {
+    text:"Qual botão usamos para testar se o circuito funciona?",
+    options:["Duplicar","Iniciar simulação","Exportar","Comentários"],
+    correct:1,
+    explain:"Isso mesmo! O botão Iniciar simulação executa o circuito virtual."
+  },
+  {
+    text:"Para montar um LED simples, qual conjunto faz mais sentido?",
+    options:["Arduino, LED, resistor, protoboard e jumpers","Motor, buzzer e sensor","Somente um LED","Somente um resistor"],
+    correct:0,
+    explain:"Muito bem! Esse conjunto permite montar e testar um circuito básico com LED."
+  },
+  {
+    text:"Para que serve o painel de componentes?",
+    options:["Para escolher peças do circuito","Para apagar a conta","Para enviar e-mail","Para mudar a senha"],
+    correct:0,
+    explain:"Correto! O painel de componentes permite procurar e selecionar as peças usadas na montagem."
+  }
+];
+
+function updateScore(points){
+  score += points;
+  scoreTop.textContent = score;
+}
+
+function updateProgress(){
+  let total = 0;
+  if (partsCompleted) total += 32;
+  if (sequenceCompleted) total += 32;
+  total += (quizAnsweredCount / questions.length) * 36;
+  if (!screens.final.classList.contains("hidden")) total = 100;
+  total = Math.min(100, Math.round(total));
+  progressText.textContent = total + "%";
+  progressFill.style.width = total + "%";
+}
+
+function showOnly(screenName){
+  Object.values(screens).forEach(s => s.classList.add("hidden"));
+  screens[screenName].classList.remove("hidden");
+  updateProgress();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function burstConfetti(){
+  const confetti = document.getElementById("confetti");
+  const colors = ["#22c55e","#3b82f6","#f59e0b","#ef4444","#a855f7"];
+  for(let i=0;i<28;i++){
+    const piece = document.createElement("span");
+    piece.style.left = Math.random()*100 + "vw";
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDelay = Math.random()*150 + "ms";
+    piece.style.transform = `rotate(${Math.random()*360}deg)`;
+    confetti.appendChild(piece);
+    setTimeout(() => piece.remove(), 1100);
+  }
+}
+
+
+
+function renderParts(){
+  const grid = document.getElementById("partsGrid");
+  grid.innerHTML = "";
+
+  fixedPartsOrder.map(id => parts.find(part => part.id === id)).forEach(part => {
+    const card = document.createElement("button");
+    card.className = "part-card" + (selectedParts.has(part.id) ? " selected" : "");
+    card.dataset.id = part.id;
+    card.innerHTML = `
+      <div class="part-icon"><i class="${part.icon}"></i></div>
+      <h3>${part.name}</h3>
+      <p>${part.text}</p>
+    `;
+    card.addEventListener("click", () => {
+      if(partsCompleted) return;
+      if(selectedParts.has(part.id)) selectedParts.delete(part.id);
+      else selectedParts.add(part.id);
+      renderParts();
+      updateProgress();
+    });
+    grid.appendChild(card);
+  });
+}
+
+function checkParts(){
+  if(partsCompleted) return;
+
+  const correctIds = parts.filter(p => p.correct).map(p => p.id);
+  const selected = [...selectedParts];
+  const allCorrect = correctIds.every(id => selectedParts.has(id)) && selected.every(id => correctIds.includes(id));
+
+  document.querySelectorAll(".part-card").forEach(card => {
+    const part = parts.find(p => p.id === card.dataset.id);
+    card.classList.remove("correct","wrong");
+    if(selectedParts.has(part.id)){
+      card.classList.add(part.correct ? "correct" : "wrong");
+    }
+  });
+
+  const feedback = document.getElementById("partsFeedback");
+  if(allCorrect){
+    partsCompleted = true;
+    feedback.innerHTML = `
+      <div class="info-icon"><i class="fa-solid fa-circle-check"></i></div>
+      <div>
+        <h3>Excelente escolha!</h3>
+        <p>Para iniciar um circuito com LED, usamos Arduino, protoboard, LED e resistor. Os jumpers serão usados para fazer as ligações.</p>
+      </div>`;
+    updateScore(25);
+    burstConfetti();
+    setTimeout(() => showOnly("sequence"), 1100);
+  } else {
+    feedback.innerHTML = `
+      <div class="info-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div>
+        <h3>Revise a seleção</h3>
+        <p>Escolha somente os componentes essenciais para um circuito simples com LED: Arduino, protoboard, LED e resistor.</p>
+      </div>`;
+  }
+
+  updateProgress();
+}
+
+function resetParts(){
+  if(partsCompleted) return;
+  selectedParts.clear();
+  renderParts();
+  document.getElementById("partsFeedback").innerHTML = `
+    <div class="info-icon"><i class="fa-solid fa-lightbulb"></i></div>
+    <div>
+      <h3>Missão</h3>
+      <p>Clique nos componentes necessários para montar um circuito básico com LED.</p>
+    </div>`;
+  updateProgress();
+}
+
+
+
+function shuffleOnceArray(arr){
+  const copy = [...arr];
+  for(let i = copy.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function renderSequenceButtons(){
+  const box = document.getElementById("sequenceButtons");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  if(!window.sequenceOrder){
+    window.sequenceOrder = shuffleOnceArray(sequenceSteps);
+
+    // Evita aparecer exatamente na ordem correta 1,2,3,4.
+    if(window.sequenceOrder.map(step => step.id).join(",") === "1,2,3,4"){
+      window.sequenceOrder = [
+        sequenceSteps.find(step => step.id === 2),
+        sequenceSteps.find(step => step.id === 4),
+        sequenceSteps.find(step => step.id === 1),
+        sequenceSteps.find(step => step.id === 3)
+      ];
+    }
+  }
+
+  window.sequenceOrder.forEach(step => {
+    const btn = document.createElement("button");
+    btn.className = "seq-item";
+    btn.dataset.step = step.id;
+    btn.innerHTML = `<span class="seq-number">?</span> ${step.text}`;
+    btn.addEventListener("click", () => chooseStep(step.id));
+    box.appendChild(btn);
+  });
+}
+
+function chooseStep(step){
+  if(sequenceCompleted) return;
+  const stepNumber = Number(step);
+  if(sequence.includes(stepNumber)) return;
+  if(sequence.length >= 4) return;
+
+  sequence.push(stepNumber);
+  renderSequenceButtons();
+renderSequence();
+  updateProgress();
+}
+
+function renderSequence(){
+  for(let i=1;i<=4;i++){
+    const slot = document.getElementById("slot"+i);
+    const value = sequence[i-1];
+    if(value){
+      const label = document.querySelector(`.seq-item[data-step="${value}"]`).innerText.replace("? ", "");
+      slot.className = "slot filled";
+      slot.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${i}º: ${label}`;
+    } else {
+      slot.className = "slot";
+      slot.innerHTML = `<i class="fa-regular fa-circle"></i> ${i}º passo`;
+    }
+  }
+
+  document.querySelectorAll(".seq-item").forEach(btn => {
+    const value = Number(btn.dataset.step);
+    btn.disabled = sequence.includes(value) || sequenceCompleted;
+    btn.style.opacity = sequence.includes(value) ? ".55" : "1";
+  });
+}
+
+function checkSequence(){
+  if(sequenceCompleted) return;
+
+  const ok = JSON.stringify(sequence) === JSON.stringify([1,2,3,4]);
+  const box = document.getElementById("sequenceFeedback");
+  const title = document.getElementById("sequenceFeedbackTitle");
+  const text = document.getElementById("sequenceFeedbackText");
+  box.classList.remove("hidden");
+
+  if(ok){
+    sequenceCompleted = true;
+    title.textContent = "Sequência correta!";
+    text.textContent = "Primeiro organizamos o espaço, depois colocamos os componentes, fazemos as ligações e testamos com a simulação.";
+    updateScore(25);
+    burstConfetti();
+    setTimeout(() => {
+      showOnly("quiz");
+      renderQuestion();
+    }, 1200);
+  } else {
+    title.textContent = "Quase lá!";
+    text.textContent = "Pense no processo de montagem: primeiro colocar a base, depois os componentes, depois ligar os fios e só então testar.";
+  }
+
+  updateProgress();
+}
+
+function resetSequence(){
+  if(sequenceCompleted) return;
+  sequence = [];
+  renderSequence();
+  document.getElementById("sequenceFeedback").classList.add("hidden");
+  updateProgress();
+}
+
+function renderQuestion(){
+  answered = false;
+  document.getElementById("nextBtn").classList.add("hidden");
+  const feedbackBox = document.getElementById("feedbackBox");
+  feedbackBox.className = "feedback";
+  feedbackBox.textContent = "";
+
+  const q = questions[currentQuestion];
+  document.getElementById("questionNumber").textContent = `Questão ${currentQuestion + 1} de ${questions.length}`;
+  document.getElementById("questionText").textContent = q.text;
+  const optionsBox = document.getElementById("optionsBox");
+  optionsBox.innerHTML = "";
+
+  q.options.forEach((op, index) => {
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.innerHTML = `<i class="fa-regular fa-circle"></i><span>${op}</span>`;
+    btn.addEventListener("click", () => answerQuestion(index, btn));
+    optionsBox.appendChild(btn);
+  });
+}
+
+function answerQuestion(index, selectedButton){
+  if(answered) return;
+  answered = true;
+  quizAnsweredCount++;
+
+  const q = questions[currentQuestion];
+  const buttons = [...document.querySelectorAll(".option")];
+
+  buttons.forEach((b, i) => {
+    b.classList.add("disabled");
+    if(i === q.correct){
+      b.classList.add("correct");
+      b.querySelector("i").className = "fa-solid fa-circle-check";
+    }
+  });
+
+  const feedbackBox = document.getElementById("feedbackBox");
+  if(index === q.correct){
+    updateScore(20);
+    feedbackBox.className = "feedback ok show";
+    feedbackBox.textContent = q.explain;
+    burstConfetti();
+  } else {
+    selectedButton.classList.add("wrong");
+    selectedButton.querySelector("i").className = "fa-solid fa-circle-xmark";
+    feedbackBox.className = "feedback bad show";
+    feedbackBox.textContent = "Quase! Observe a alternativa correta em verde. " + q.explain;
+  }
+
+  document.getElementById("nextBtn").classList.remove("hidden");
+  updateProgress();
+}
+
+function nextQuestion(){
+  currentQuestion++;
+  if(currentQuestion >= questions.length) finish();
+  else renderQuestion();
+}
+
+function skipQuestion(){
+  if(answered) return;
+  quizAnsweredCount++;
+  currentQuestion++;
+  if(currentQuestion >= questions.length) finish();
+  else renderQuestion();
+  updateProgress();
+}
+
+function finish(){
+  showOnly("final");
+  document.getElementById("finalScore").textContent = score;
+
+  const msg = document.getElementById("finalMessage");
+  if(score >= 155) msg.textContent = "Excelente! Você explorou a interface, escolheu os componentes e organizou muito bem os passos da montagem.";
+  else if(score >= 110) msg.textContent = "Muito bom! Você já sabe reconhecer partes importantes do Tinkercad e preparar um primeiro circuito.";
+  else msg.textContent = "Você concluiu a missão. Nas próximas aulas, vamos praticar mais a montagem e a simulação de circuitos.";
+
+  progressText.textContent = "100%";
+  progressFill.style.width = "100%";
+  burstConfetti();
+}
+
+async function sendResult(){
+  const name = document.getElementById("studentName").value.trim();
+  const turma = document.getElementById("studentClass").value.trim();
+
+  if(!name){
+    document.getElementById("sendStatus").textContent = "Digite o nome do aluno antes de enviar.";
+    return;
+  }
+
+  const payload = {
+    objeto: ACTIVITY_NAME,
+    atividade: ACTIVITY_NAME,
+    nome: name,
+    turma: turma,
+    pontuacao: score,
+    totalPossivel: 25 + 25 + questions.length*20,
+    dataHora: new Date().toLocaleString("pt-BR")
+  };
+
+  const sendBtn = document.getElementById("sendBtn");
+  const sendStatus = document.getElementById("sendStatus");
+  sendBtn.disabled = true;
+  sendStatus.textContent = "Enviando resultado...";
+
+  try{
+    await fetch(APPS_SCRIPT_URL, {
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    sendStatus.textContent = "Resultado enviado! Se a URL estiver correta, os dados foram gravados na planilha.";
+  }catch(e){
+    sendStatus.textContent = "Não foi possível enviar. Verifique a conexão e tente novamente.";
+  }finally{
+    sendBtn.disabled = false;
+  }
+}
+
+document.getElementById("btnCheckParts").addEventListener("click", checkParts);
+document.getElementById("btnResetParts").addEventListener("click", resetParts);
+document.getElementById("btnCheckSequence").addEventListener("click", checkSequence);
+document.getElementById("btnResetSequence").addEventListener("click", resetSequence);
+document.getElementById("nextBtn").addEventListener("click", nextQuestion);
+document.getElementById("skipBtn").addEventListener("click", skipQuestion);
+document.getElementById("sendBtn").addEventListener("click", sendResult);
+
+renderParts();
+renderSequence();
+updateProgress();
+</script>
+
+<script>
+(function corrigirPassosDisponiveis(){
+  function montarPassos(){
+    const box = document.getElementById("sequenceButtons");
+    if(!box) return;
+
+    const passos = [
+      {id:2, text:"Colocar o Arduino, o LED e o resistor"},
+      {id:4, text:"Clicar em iniciar simulação para testar"},
+      {id:1, text:"Arrastar a protoboard para a área de trabalho"},
+      {id:3, text:"Fazer as ligações com jumpers"}
+    ];
+
+    box.innerHTML = "";
+
+    passos.forEach(step => {
+      const btn = document.createElement("button");
+      btn.className = "seq-item";
+      btn.dataset.step = step.id;
+      btn.innerHTML = `<span class="seq-number">?</span> ${step.text}`;
+      btn.addEventListener("click", function(){
+        if(typeof chooseStep === "function"){
+          chooseStep(step.id);
+        }
+      });
+      box.appendChild(btn);
+    });
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", montarPassos);
+  } else {
+    montarPassos();
+  }
+})();
+</script>
+
+</body>
+</html>
