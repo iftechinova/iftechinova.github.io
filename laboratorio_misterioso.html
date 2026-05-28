@@ -410,13 +410,24 @@ async function sendResult(){
     return;
   }
 
+  const totalPossivel = components.length * 10 + questions.length * 20;
+
+  /*
+    O Apps Script usado nos outros objetos recebe principalmente:
+    nome, atividade, acertos e total.
+    Mantive também objeto, turma, pontuacao e totalPossivel para compatibilidade
+    com planilhas/scripts que usem esses nomes de colunas.
+  */
   const payload = {
-    objeto: "Laboratório Misterioso aula 1",
-    atividade: "Laboratório Misterioso aula 1",
     nome: name,
+    atividade: "Laboratório Misterioso aula 1",
+    acertos: score,
+    total: totalPossivel,
+
+    objeto: "Laboratório Misterioso aula 1",
     turma: turma,
     pontuacao: score,
-    totalPossivel: components.length * 10 + questions.length * 20,
+    totalPossivel: totalPossivel,
     dataHora: new Date().toLocaleString("pt-BR")
   };
 
@@ -427,12 +438,12 @@ async function sendResult(){
     await fetch(APPS_SCRIPT_URL, {
       method:"POST",
       mode:"no-cors",
-      headers:{"Content-Type":"application/json"},
       body: JSON.stringify(payload)
     });
-    sendStatus.textContent = "Resultado enviado! Se a URL estiver correta, os dados foram gravados na planilha.";
+    sendStatus.textContent = "Resultado enviado para a planilha.";
   }catch(e){
-    sendStatus.textContent = "Não foi possível enviar. Verifique a URL do Apps Script e a publicação do Web App.";
+    console.error(e);
+    sendStatus.textContent = "Não foi possível enviar. Verifique a conexão, a URL do Apps Script e a publicação do Web App.";
   }finally{
     sendBtn.disabled = false;
   }
