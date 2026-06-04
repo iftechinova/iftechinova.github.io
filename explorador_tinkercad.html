@@ -420,6 +420,7 @@ input:focus{outline:0;border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.
     <div class="actions">
       <button class="btn-secondary" id="btnResetParts">Limpar seleção</button>
       <button class="btn-primary" id="btnCheckParts">Verificar seleção</button>
+      <button class="btn-primary hidden" id="btnNextParts">Próximo <i class="fa-solid fa-arrow-right"></i></button>
     </div>
   </section>
 
@@ -455,6 +456,7 @@ input:focus{outline:0;border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.
     <div class="actions">
       <button class="btn-secondary" id="btnResetSequence">Recomeçar sequência</button>
       <button class="btn-primary" id="btnCheckSequence">Verificar sequência</button>
+      <button class="btn-primary hidden" id="btnNextSequence">Próximo <i class="fa-solid fa-arrow-right"></i></button>
     </div>
   </section>
 
@@ -517,6 +519,10 @@ let answered = false;
 let quizAnsweredCount = 0;
 let partsCompleted = false;
 let sequenceCompleted = false;
+let partsScored = false;
+let sequenceScored = false;
+let partsVerified = false;
+let sequenceVerified = false;
 
 const scoreTop = document.getElementById("scoreTop");
 const progressText = document.getElementById("progressText");
@@ -649,7 +655,6 @@ function renderParts(){
       <p>${part.text}</p>
     `;
     card.addEventListener("click", () => {
-      if(partsCompleted) return;
       if(selectedParts.has(part.id)) selectedParts.delete(part.id);
       else selectedParts.add(part.id);
       renderParts();
@@ -660,8 +665,6 @@ function renderParts(){
 }
 
 function checkParts(){
-  if(partsCompleted) return;
-
   const correctIds = parts.filter(p => p.correct).map(p => p.id);
   const selected = [...selectedParts];
   const allCorrect = correctIds.every(id => selectedParts.has(id)) && selected.every(id => correctIds.includes(id));
@@ -675,23 +678,29 @@ function checkParts(){
   });
 
   const feedback = document.getElementById("partsFeedback");
+  const nextButton = document.getElementById("btnNextParts");
+  partsVerified = true;
+  nextButton.classList.remove("hidden");
+
   if(allCorrect){
-    partsCompleted = true;
     feedback.innerHTML = `
       <div class="info-icon"><i class="fa-solid fa-circle-check"></i></div>
       <div>
         <h3>Excelente escolha!</h3>
-        <p>Para iniciar um circuito com LED, usamos Arduino, protoboard, LED e resistor. Os jumpers serão usados para fazer as ligações.</p>
+        <p>Para iniciar um circuito com LED, usamos Arduino, protoboard, LED e resistor. Os jumpers serão usados para fazer as ligações. Você pode seguir ou revisar a seleção antes de avançar.</p>
       </div>`;
-    updateScore(25);
-    burstConfetti();
-    setTimeout(() => showOnly("sequence"), 1100);
+
+    if(!partsScored){
+      updateScore(25);
+      partsScored = true;
+      burstConfetti();
+    }
   } else {
     feedback.innerHTML = `
       <div class="info-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
       <div>
         <h3>Revise a seleção</h3>
-        <p>Escolha somente os componentes essenciais para um circuito simples com LED: Arduino, protoboard, LED e resistor.</p>
+        <p>A seleção ainda não está ideal. Tente deixar somente os componentes essenciais para um circuito simples com LED: Arduino, protoboard, LED e resistor. Você pode corrigir e verificar novamente ou clicar em Próximo para continuar.</p>
       </div>`;
   }
 
@@ -699,17 +708,17 @@ function checkParts(){
 }
 
 function resetParts(){
-  if(partsCompleted) return;
   selectedParts.clear();
   renderParts();
   document.getElementById("partsFeedback").innerHTML = `
     <div class="info-icon"><i class="fa-solid fa-lightbulb"></i></div>
     <div>
       <h3>Missão</h3>
-      <p>Clique nos componentes necessários para montar um circuito básico com LED.</p>
+      <p>Clique nos componentes necessários para montar um circuito básico com LED. Depois clique em Verificar seleção.</p>
     </div>`;
   updateProgress();
 }
+
 
 
 
@@ -753,7 +762,6 @@ function renderSequenceButtons(){
 }
 
 function chooseStep(step){
-  if(sequenceCompleted) return;
   const stepNumber = Number(step);
   if(sequence.includes(stepNumber)) return;
   if(sequence.length >= 4) return;
@@ -786,35 +794,51 @@ function renderSequence(){
 }
 
 function checkSequence(){
-  if(sequenceCompleted) return;
+  if(sequence.length < 4){
+    const box = document.getElementById("sequenceFeedback");
+    const title = document.getElementById("sequenceFeedbackTitle");
+    const text = document.getElementById("sequenceFeedbackText");
+    box.classList.remove("hidden");
+    title.textContent = "Complete a sequência";
+    text.textContent = "Escolha os quatro passos antes de verificar. Depois disso, você poderá corrigir ou avançar.";
+    return;
+  }
 
-  const ok = JSON.stringify(sequence) === JSON.stringify([1,2,3,4]);
+  const respostasValidas = [
+    [1,2,3,4],
+    [2,1,3,4]
+  ];
+
+  const ok = respostasValidas.some(r => JSON.stringify(r) === JSON.stringify(sequence));
   const box = document.getElementById("sequenceFeedback");
   const title = document.getElementById("sequenceFeedbackTitle");
   const text = document.getElementById("sequenceFeedbackText");
+  const nextButton = document.getElementById("btnNextSequence");
+
+  sequenceVerified = true;
+  nextButton.classList.remove("hidden");
   box.classList.remove("hidden");
 
   if(ok){
-    sequenceCompleted = true;
     title.textContent = "Sequência correta!";
-    text.textContent = "Primeiro organizamos o espaço, depois colocamos os componentes, fazemos as ligações e testamos com a simulação.";
-    updateScore(25);
-    burstConfetti();
-    setTimeout(() => {
-      showOnly("quiz");
-      renderQuestion();
-    }, 1200);
+    text.textContent = "Muito bem! Você organizou os passos de uma forma adequada. Pode seguir ou recomeçar a sequência para revisar.";
+
+    if(!sequenceScored){
+      updateScore(25);
+      sequenceScored = true;
+      burstConfetti();
+    }
   } else {
-    title.textContent = "Quase lá!";
-    text.textContent = "Pense no processo de montagem: primeiro colocar a base, depois os componentes, depois ligar os fios e só então testar.";
+    title.textContent = "Revise a sequência";
+    text.textContent = "Essa ordem ainda pode melhorar. Uma boa lógica é preparar a base e os componentes, fazer as ligações com jumpers e só depois iniciar a simulação. Você pode recomeçar e verificar de novo ou clicar em Próximo para continuar.";
   }
 
   updateProgress();
 }
 
 function resetSequence(){
-  if(sequenceCompleted) return;
   sequence = [];
+  renderSequenceButtons();
   renderSequence();
   document.getElementById("sequenceFeedback").classList.add("hidden");
   updateProgress();
@@ -943,10 +967,25 @@ async function sendResult(){
   }
 }
 
+function nextParts(){
+  partsCompleted = true;
+  document.getElementById("btnNextParts").classList.add("hidden");
+  showOnly("sequence");
+}
+
+function nextSequence(){
+  sequenceCompleted = true;
+  document.getElementById("btnNextSequence").classList.add("hidden");
+  showOnly("quiz");
+  renderQuestion();
+}
+
 document.getElementById("btnCheckParts").addEventListener("click", checkParts);
 document.getElementById("btnResetParts").addEventListener("click", resetParts);
+document.getElementById("btnNextParts").addEventListener("click", nextParts);
 document.getElementById("btnCheckSequence").addEventListener("click", checkSequence);
 document.getElementById("btnResetSequence").addEventListener("click", resetSequence);
+document.getElementById("btnNextSequence").addEventListener("click", nextSequence);
 document.getElementById("nextBtn").addEventListener("click", nextQuestion);
 document.getElementById("skipBtn").addEventListener("click", skipQuestion);
 document.getElementById("sendBtn").addEventListener("click", sendResult);
